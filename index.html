@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="my">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>စားသောက်ဆိုင် ဘောက်ချာ System By Myanmar Coding</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Myanmar:wght@500;700&family=Noto+Sans+Myanmar:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<link rel="manifest" href="pwa-manifest.json">
+<style>
+  :root{
+    --paper:#FFFFFF;
+    --paper-dim:#F0F0F0;
+    --ink:#111111;
+    --ink-soft:#444444;
+    --gold:#111111;
+    --gold-soft:#CCCCCC;
+    --gold-bg:#F0F0F0;
+    --line:#D9D9D9;
+    --muted:#6E6E6E;
+    --danger:#111111;
+    --danger-bg:#EAEAEA;
+    --success:#111111;
+    --success-bg:#EAEAEA;
+    --shadow: 0 10px 26px rgba(0,0,0,0.14);
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;padding:0;}
+  html{-webkit-text-size-adjust:100%;}
+  body{
+    background:#000000;
+    background-image: radial-gradient(circle at 20% 10%, #262626 0%, #101010 55%, #000000 100%);
+    min-height:100vh;
+    font-family:'Noto Sans Myanmar','Noto Sans',sans-serif;
+    color:var(--ink);
+    display:flex;
+    justify-content:center;
+    padding:20px 12px 40px;
+    overflow-x:hidden;
+  }
+  .app{width:100%;max-width:480px;}
+  img,svg{max-width:100%;}
+  @media (max-width:380px){
+    body{padding:14px 8px 30px;}
+  }
+  .topbar{
+    display:flex;align-items:center;justify-content:space-between;
+    gap:10px;flex-wrap:wrap;
+    color:var(--paper);
+    margin-bottom:16px;
+    padding:0 4px;
+  }
+  .brand{display:flex;align-items:center;gap:10px;min-width:0;}
+  .brand-mark{
+    width:34px;height:34px;border-radius:9px;flex:none;
+    background:#FFFFFF;
+    display:flex;align-items:center;justify-content:center;color:#000000;
+  }
+  .brand-name{
+    font-family:'Noto Serif Myanmar',serif;font-weight:700;
+    font-size:clamp(14px,4vw,17px);letter-spacing:.2px;
+    overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  }
+  .back-link{
+    display:flex;align-items:center;gap:6px;flex:none;
+    background:rgba(255,255,255,0.10);
+    border:1px solid rgba(255,255,255,0.22);
+    color:var(--paper);
+    padding:7px 12px;border-radius:100px;font-size:13px;cursor:pointer;
+  }
+  .back-link:hover{background:rgba(255,255,255,0.18);}
+
+  .card{
+    background:var(--paper);
+    border-radius:18px;
+    box-shadow:var(--shadow);
+    overflow:hidden;
+  }
+  .card-pad{padding:clamp(16px,5vw,24px);}
+
+  /* device select screen */
+  .choices{display:flex;flex-direction:column;gap:12px;}
+  .choice-card{
+    background:var(--paper);
+    border-radius:18px;box-shadow:var(--shadow);
+    padding:clamp(16px,5vw,22px);display:flex;gap:14px;align-items:center;cursor:pointer;
+    border:1px solid transparent;transition:transform .12s ease, border-color .12s ease;
+    text-align:left;
+  }
+  .choice-card:hover{transform:translateY(-2px);border-color:var(--gold-soft);}
+  .choice-icon{
+    width:48px;height:48px;flex:none;border-radius:14px;
+    background:var(--ink);color:var(--gold-soft);
+    display:flex;align-items:center;justify-content:center;
+  }
+  .choice-title{font-family:'Noto Serif Myanmar',serif;font-weight:700;font-size:clamp(15px,4vw,16.5px);margin:0 0 3px;color:var(--ink);}
+  .choice-desc{font-size:12.5px;color:var(--muted);margin:0;line-height:1.5;}
+
+  h1.page-title{
+    font-family:'Noto Serif Myanmar',serif;font-weight:700;
+    font-size:clamp(17px,4.5vw,19px);margin:0 0 4px;color:var(--ink);
+  }
+  p.page-sub{font-size:12.5px;color:var(--muted);margin:0 0 18px;line-height:1.5;}
+
+  label.field-label{display:block;font-size:12.5px;color:var(--ink-soft);font-weight:600;margin-bottom:6px;}
+  input.field-input{
+    width:100%;border:1.5px solid var(--line);background:#fff;
+    border-radius:10px;padding:11px 12px;font-size:14.5px;font-family:inherit;color:var(--ink);
+  }
+  input.field-input:focus{outline:none;border-color:var(--gold);}
+  input.mono-input{font-family:'IBM Plex Mono',monospace;}
+
+  .row3{display:grid;grid-template-columns:2fr 1fr 1fr;gap:8px;margin-bottom:12px;}
+  @media (max-width:360px){
+    .row3{grid-template-columns:1fr 1fr;grid-template-areas:"price qty" "add add";}
+    .row3 > div:nth-child(1){grid-area:price;}
+    .row3 > div:nth-child(2){grid-area:qty;}
+    .row3 > div:nth-child(3){grid-area:add;}
+  }
+  .btn{
+    border:none;border-radius:10px;font-family:inherit;font-weight:600;font-size:13.5px;
+    cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:7px;
+    padding:12px 14px;transition:opacity .12s ease, transform .08s ease;
+    min-height:44px;
+  }
+  .btn:active{transform:scale(0.98);}
+  .btn-primary{background:var(--ink);color:var(--gold-soft);width:100%;}
+  .btn-primary:hover{opacity:.9;}
+  .btn-gold{background:var(--gold);color:#fff;width:100%;}
+  .btn-gold:hover{opacity:.9;}
+  .btn-ghost{background:var(--paper-dim);color:var(--ink-soft);}
+  .btn-outline{background:transparent;border:1.5px solid var(--line);color:var(--ink-soft);}
+  .btn-danger{background:var(--danger);color:#fff;}
+  .btn-sm{padding:8px 12px;font-size:12.5px;}
+  .btn:disabled{opacity:.45;cursor:not-allowed;}
+
+  .cart-list{margin:16px 0;display:flex;flex-direction:column;gap:8px;}
+  .cart-item{
+    display:flex;align-items:center;justify-content:space-between;gap:10px;
+    background:var(--paper-dim);border-radius:10px;padding:10px 12px;
+  }
+  .cart-item > div:first-child{min-width:0;}
+  .cart-item-name{font-size:13.5px;font-weight:600;color:var(--ink);word-break:break-word;}
+  .cart-item-sub{font-size:12px;color:var(--muted);margin-top:2px;}
+  .cart-item-amt{font-family:'IBM Plex Mono',monospace;font-size:13.5px;font-weight:600;color:var(--ink);white-space:nowrap;}
+  .icon-btn{
+    width:30px;height:30px;border-radius:8px;border:none;background:var(--danger-bg);color:var(--danger);
+    display:flex;align-items:center;justify-content:center;cursor:pointer;flex:none;
+  }
+  .empty-note{font-size:13px;color:var(--muted);text-align:center;padding:22px 10px;}
+
+  .divider{height:1px;background:var(--line);margin:16px 0;}
+  .totals-row{display:flex;justify-content:space-between;align-items:baseline;font-size:14px;color:var(--ink-soft);padding:3px 0;}
+  .totals-row.grand{font-size:17px;font-weight:700;color:var(--ink);padding-top:8px;}
+  .totals-amt{font-family:'IBM Plex Mono',monospace;font-weight:600;}
+
+  /* ticket / code display */
+  .ticket{
+    margin-top:18px;border-radius:16px;background:var(--ink);color:var(--paper);
+    padding:clamp(20px,6vw,26px) 16px;text-align:center;position:relative;
+  }
+  .ticket:before,.ticket:after{
+    content:"";position:absolute;top:50%;transform:translateY(-50%);
+    width:22px;height:22px;background:var(--ink);border-radius:50%;
+  }
+  .ticket-label{font-size:12px;color:var(--gold-soft);letter-spacing:1px;margin-bottom:8px;}
+  .ticket-code{font-family:'IBM Plex Mono',monospace;font-size:clamp(30px,10vw,38px);font-weight:600;letter-spacing:clamp(3px,1.5vw,6px);color:#fff;}
+  .ticket-hint{font-size:12px;color:rgba(255,255,255,0.6);margin-top:10px;}
+
+  /* receipt paper look */
+  .receipt-paper{
+    background:var(--paper);border-radius:14px 14px 0 0;box-shadow:var(--shadow);
+    padding:clamp(16px,5vw,22px) clamp(14px,4.5vw,20px) 18px;
+  }
+  .receipt-torn{
+    height:14px;
+    background:
+      linear-gradient(135deg, var(--paper) 50%, transparent 50%) 0 0/14px 14px repeat-x,
+      linear-gradient(-135deg, var(--paper) 50%, transparent 50%) 0 0/14px 14px repeat-x;
+    filter:drop-shadow(0 6px 6px rgba(0,0,0,0.10));
+    margin-bottom:16px;
+  }
+  .receipt-head{text-align:center;margin-bottom:14px;}
+  .receipt-head .rname{font-family:'Noto Serif Myanmar',serif;font-weight:700;font-size:17px;color:var(--ink);}
+  .receipt-head .rcode{font-size:12px;color:var(--muted);margin-top:3px;font-family:'IBM Plex Mono',monospace;}
+  .dashed{border-top:1.5px dashed var(--line);margin:14px 0;}
+
+  .section-title{
+    display:flex;align-items:center;gap:8px;font-weight:700;font-size:14px;color:var(--ink);margin-bottom:4px;
+  }
+  .section-note{font-size:12.5px;color:var(--muted);margin-bottom:12px;line-height:1.5;}
+  .amount-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:10px;}
+  .amount-btn{
+    border:1.5px solid var(--ink);background:var(--gold-bg);color:var(--ink);
+    border-radius:10px;padding:11px 4px;font-family:'IBM Plex Mono',monospace;font-weight:600;
+    font-size:clamp(11.5px,3.2vw,13.5px);cursor:pointer;min-height:44px;
+  }
+  .amount-btn:hover{background:var(--gold-soft);}
+  .decided-box{
+    display:flex;align-items:center;justify-content:space-between;gap:8px;
+    background:var(--success-bg);color:var(--success);border-radius:10px;padding:11px 13px;font-size:13px;font-weight:600;
+  }
+  .decided-box.zero{background:var(--paper-dim);color:var(--muted);}
+  .tip-input-row{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px;}
+  .tip-input-row input{flex:1 1 140px;min-width:0;}
+  .tip-input-row button{flex:1 1 100px;}
+
+  .final-total{
+    background:var(--ink);color:var(--paper);border-radius:12px;padding:16px 16px;margin:14px 0 6px;
+  }
+  .final-total .frow{display:flex;justify-content:space-between;font-size:13px;padding:3px 0;color:rgba(255,255,255,0.75);}
+  .final-total .frow.grand{font-size:19px;font-weight:700;color:#fff;padding-top:8px;border-top:1px dashed rgba(255,255,255,0.25);margin-top:8px;}
+  .frow-amt{font-family:'IBM Plex Mono',monospace;}
+
+  .qr-box{
+    background:#fff;border:1.5px solid var(--ink);border-radius:14px;
+    padding:clamp(14px,4vw,18px);display:flex;flex-direction:column;align-items:center;margin-top:16px;
+  }
+  .qr-brand{display:flex;align-items:center;gap:7px;color:var(--ink);font-weight:700;font-size:14px;margin-bottom:12px;text-align:center;}
+  .qr-canvas{background:#fff;padding:6px;border-radius:8px;max-width:100%;}
+  .qr-canvas img{max-width:100%;height:auto;border-radius:6px;}
+  .qr-caption{font-size:12px;color:var(--muted);text-align:center;margin-top:10px;line-height:1.5;}
+
+  .error-box{
+    background:var(--danger-bg);color:var(--danger);border-radius:10px;padding:11px 13px;font-size:13px;margin-top:12px;
+    display:flex;align-items:center;gap:8px;
+  }
+
+  /* modal */
+  .modal-backdrop{
+    position:fixed;inset:0;background:rgba(0,0,0,0.6);
+    display:flex;align-items:center;justify-content:center;padding:18px;z-index:50;
+  }
+  .modal-box{
+    background:var(--paper);border-radius:16px;padding:clamp(18px,6vw,24px) clamp(16px,5vw,22px);
+    max-width:340px;width:100%;
+    box-shadow:0 20px 50px rgba(0,0,0,0.4);text-align:center;
+  }
+  .modal-icon{
+    width:44px;height:44px;border-radius:50%;background:var(--gold-bg);color:var(--gold);
+    border:1.5px solid var(--ink);
+    display:flex;align-items:center;justify-content:center;margin:0 auto 12px;
+  }
+  .modal-title{font-family:'Noto Serif Myanmar',serif;font-weight:700;font-size:16px;color:var(--ink);margin:0 0 6px;}
+  .modal-amt{font-family:'IBM Plex Mono',monospace;font-weight:700;font-size:clamp(17px,5vw,20px);color:var(--gold);margin-bottom:16px;}
+  .modal-btns{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+
+  .footnote{text-align:center;color:rgba(255,255,255,0.45);font-size:11.5px;margin-top:16px;line-height:1.6;}
+  .bottom-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px;}
+  .bottom-actions .btn{flex:1 1 140px;}
+</style>
+</head>
+<body>
+<div class="app" id="app"></div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCImeryZ6I1tilrniWTeK4xJlysfMdg1JQ",
+  authDomain: "restaurent-d073f.firebaseapp.com",
+  projectId: "restaurent-d073f",
+  storageBucket: "restaurent-d073f.firebasestorage.app",
+  messagingSenderId: "813970946029",
+  appId: "1:813970946029:web:54591a768ade6bc8ab19e4",
+  measurementId: "G-YTMCQM52VQ"
+};
+
+const fbApp = initializeApp(firebaseConfig);
+const db = getFirestore(fbApp);
+window.__fb = { db, doc, setDoc, getDoc };
+</script>
+
+<script>
+const ICONS = {
+  ticket: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v1.5a1.5 1.5 0 0 0 0 3V15a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-1.5a1.5 1.5 0 0 0 0-3V9Z"/><path d="M10 7v10" stroke-dasharray="2 2"/></svg>',
+  receipt: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2h12v19l-3-2-3 2-3-2-3 2V2Z"/><path d="M9 8h6M9 12h6" /></svg>',
+  plus: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>',
+  trash: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2m-8 0 1 13a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2l1-13"/></svg>',
+  gift: '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12v9H4v-9M2 7h20v5H2V7Z"/><path d="M12 22V7M12 7c-1.2 0-3.5-.6-3.5-2.5S9.8 2 11 2c2 0 1.5 3 1.5 5M12 7c1.2 0 3.5-.6 3.5-2.5S14.2 2 13 2c-2 0-1.5 3-1.5 5"/></svg>',
+  coin: '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.2c0-1 1-1.7 2.5-1.7s2.5.7 2.5 1.6c0 2.2-5 1.4-5 3.7 0 .9 1.1 1.7 2.5 1.7s2.5-.7 2.5-1.7M12 6.5v11"/></svg>',
+  check: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5 10 17l9-10"/></svg>',
+  x: '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6 6 18"/></svg>',
+  arrow: '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5 8 12l7 7"/></svg>',
+  qr: '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h3v3M20 14v.01M14 20h3M20 20v.01"/></svg>',
+  alert: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4M12 17h.01"/><circle cx="12" cy="12" r="9"/></svg>',
+  store: '<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l1.5-5h15L21 9M3 9v11h18V9M3 9h18M9 20v-6h6v6"/></svg>',
+};
+
+function fmt(n){ return Number(n||0).toLocaleString('en-US'); }
+function genCode(){
+  let c = '';
+  for(let i=0;i<4;i++) c += Math.floor(Math.random()*10);
+  return c;
+}
+
+let state = {
+  device: null,
+  cart: [],
+  generatedCode: null,
+  codeInput: '',
+  order: null,
+  searchError: null,
+  donation: null,
+  tip: null,
+  tipCustom: '',
+  modal: null,
+  saving: false,
+};
+
+function setState(patch){
+  state = Object.assign({}, state, patch);
+  render();
+}
+
+function goSelect(){
+  state = { device:null, cart:[], generatedCode:null, codeInput:'', order:null, searchError:null, donation:null, tip:null, tipCustom:'', modal:null, saving:false };
+  render();
+}
+function selectDevice(d){ setState({ device:d }); }
+
+/* ---------- order device ---------- */
+function addItem(){
+  const name = document.getElementById('inp-name').value.trim();
+  const price = parseFloat(document.getElementById('inp-price').value);
+  const qty = parseInt(document.getElementById('inp-qty').value) || 1;
+  if(!name || !price || price<=0){ return; }
+  const cart = state.cart.slice();
+  cart.push({ name, price, qty });
+  setState({ cart });
+}
+function removeItem(idx){
+  const cart = state.cart.slice();
+  cart.splice(idx,1);
+  setState({ cart });
+}
+async function generateCode(){
+  if(state.cart.length===0 || state.saving) return;
+  setState({ saving:true });
+  const code = genCode();
+  const subtotal = state.cart.reduce((s,i)=>s+i.price*i.qty,0);
+  const payload = { code, items: state.cart, subtotal, createdAt: Date.now() };
+  try{
+    const { db, doc, setDoc } = window.__fb;
+    await setDoc(doc(db, "orders", code), payload);
+    setState({ generatedCode: code, saving:false });
+  }catch(e){
+    setState({ saving:false });
+    alert('ကုဒ်ထုတ်ရာတွင် အမှားရှိပါသည်။ ထပ်မံကြိုးစားပါ။');
+  }
+}
+function newOrder(){ setState({ cart:[], generatedCode:null }); }
+
+/* ---------- receipt device ---------- */
+function setCodeInput(v){ state.codeInput = v; }
+async function searchOrder(){
+  const code = (state.codeInput||'').trim();
+  if(!code){ return; }
+  setState({ saving:true, searchError:null });
+  try{
+    const { db, doc, getDoc } = window.__fb;
+    const snap = await getDoc(doc(db, "orders", code));
+    if(!snap.exists()) throw new Error('not found');
+    const data = snap.data();
+    setState({ order:data, saving:false, searchError:null, donation:null, tip:null, tipCustom:'' });
+  }catch(e){
+    setState({ saving:false, searchError:'ဤကုဒ်ဖြင့် အော်ဒါကို ရှာမတွေ့ပါ ကုဒ်ကို ပြန်စစ်ပါ', order:null });
+  }
+}
+function resetReceiptFlow(){
+  setState({ codeInput:'', order:null, searchError:null, donation:null, tip:null, tipCustom:'' });
+}
+
+function askDonation(amount){
+  setState({ modal:{ kind:'donation', amount } });
+}
+function confirmDonation(){
+  const amt = state.modal.amount;
+  setState({ donation: amt, modal:null });
+}
+function skipDonation(){
+  setState({ donation: 0, modal:null });
+}
+function setTipCustom(v){ state.tipCustom = v; }
+function askTip(){
+  const amt = parseFloat(state.tipCustom);
+  if(!amt || amt<=0) return;
+  setState({ modal:{ kind:'tip', amount: amt } });
+}
+function confirmTip(){
+  const amt = state.modal.amount;
+  setState({ tip: amt, modal:null });
+}
+function skipTip(){
+  setState({ tip: 0, modal:null });
+}
+function closeModal(){ setState({ modal:null }); }
+
+/* ---------- render ---------- */
+function render(){
+  const app = document.getElementById('app');
+  app.innerHTML = topbarHTML() + bodyHTML() + (state.modal ? modalHTML() : '');
+  attachEvents();
+  // QR code is now a static image, no need to render dynamically
+}
+
+function topbarHTML(){
+  if(!state.device){
+    return `<div class="topbar">
+      <div class="brand"><div class="brand-name">စားသောက်ဆိုင် ဘောက်ချာ</div></div>
+    </div>`;
+  }
+  return `<div class="topbar">
+    <div class="brand"><div class="brand-name">${state.device==='order'?'အော်ဒါထည့်စက်':'ဘောက်ချာစက်'}</div></div>
+    <div class="back-link" id="btn-back">${ICONS.arrow}<span>ပြန်သွားရန်</span></div>
+  </div>`;
+}
+
+function bodyHTML(){
+  if(!state.device) return selectHTML();
+  if(state.device==='order') return orderDeviceHTML();
+  return receiptDeviceHTML();
+}
+
+function selectHTML(){
+  return `<div class="choices">
+    <div class="choice-card" id="pick-order">
+      <div class="choice-icon">${ICONS.ticket}</div>
+      <div>
+        <p class="choice-title">အော်ဒါထည့်စက်</p>
+        <p class="choice-desc">Menu ပစ္စည်းများ ထည့်သွင်း၍ အော်ဒါကုဒ် ထုတ်ပေးသည့် စက်</p>
+      </div>
+    </div>
+    <div class="choice-card" id="pick-receipt">
+      <div class="choice-icon">${ICONS.receipt}</div>
+      <div>
+        <p class="choice-title">ဘောက်ချာစက်</p>
+        <p class="choice-desc">အော်ဒါကုဒ် ရိုက်ထည့်၍ ဘောက်ချာနှင့် ငွေပေးချေမှု ပြသသည့် စက်</p>
+      </div>
+    </div>
+  </div>`;
+}
+
+/* ---- order device ---- */
+function orderDeviceHTML(){
+  if(state.generatedCode){
+    return `<div class="card card-pad">
+      <h1 class="page-title">ကုဒ်ထုတ်ပြီးပါပြီ</h1>
+      <p class="page-sub">ဤကုဒ်ကို ဘောက်ချာစက်တွင် ရိုက်ထည့်ပါက အော်ဒါကို ပြသပါမည်</p>
+      <div class="ticket">
+        <div class="ticket-label">အော်ဒါကုဒ်</div>
+        <div class="ticket-code">${state.generatedCode}</div>
+        <div class="ticket-hint">ဤကုဒ်ကို ဘောက်ချာစက်သို့ ပေးပါ</div>
+      </div>
+      <div class="bottom-actions">
+        <button class="btn btn-gold" id="btn-neworder">${ICONS.plus} အော်ဒါအသစ် ထည့်မည်</button>
+      </div>
+    </div>`;
+  }
+
+  const subtotal = state.cart.reduce((s,i)=>s+i.price*i.qty,0);
+  const rows = state.cart.map((it,idx)=>`
+    <div class="cart-item">
+      <div>
+        <div class="cart-item-name">${escapeHTML(it.name)}</div>
+        <div class="cart-item-sub">${fmt(it.price)} ကျပ် × ${it.qty}</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;">
+        <div class="cart-item-amt">${fmt(it.price*it.qty)}</div>
+        <button class="icon-btn" data-remove="${idx}">${ICONS.trash}</button>
+      </div>
+    </div>`).join('');
+
+  return `<div class="card card-pad">
+    <h1 class="page-title">မီနူးပစ္စည်း ထည့်ရန်</h1>
+    <p class="page-sub">အမည်၊ ဈေးနှုန်းနှင့် အရေအတွက် ထည့်သွင်းပါ</p>
+
+    <label class="field-label">ပစ္စည်းအမည်</label>
+    <input class="field-input" id="inp-name" placeholder="ဥပမာ - ခေါက်ဆွဲကြော်" style="margin-bottom:12px;">
+    <div class="row3">
+      <div>
+        <label class="field-label">ဈေးနှုန်း (ကျပ်)</label>
+        <input class="field-input mono-input" id="inp-price" type="number" min="0" placeholder="3000">
+      </div>
+      <div>
+        <label class="field-label">အရေအတွက်</label>
+        <input class="field-input mono-input" id="inp-qty" type="number" min="1" value="1">
+      </div>
+      <div style="display:flex;align-items:flex-end;">
+        <button class="btn btn-primary" id="btn-add" style="height:44px;">${ICONS.plus}</button>
+      </div>
+    </div>
+
+    <div class="cart-list">
+      ${state.cart.length ? rows : '<div class="empty-note">မီနူးပစ္စည်း မထည့်ရသေးပါ</div>'}
+    </div>
+
+    ${state.cart.length ? `
+    <div class="divider"></div>
+    <div class="totals-row grand"><span>စုစုပေါင်း</span><span class="totals-amt">${fmt(subtotal)} ကျပ်</span></div>
+    <div style="margin-top:16px;">
+      <button class="btn btn-gold" id="btn-gencode" ${state.saving?'disabled':''}>${ICONS.ticket} ${state.saving?'ထုတ်နေသည်...':'အော်ဒါကုဒ် ထုတ်မည်'}</button>
+    </div>` : ''}
+  </div>`;
+}
+
+/* ---- receipt device ---- */
+function receiptDeviceHTML(){
+  if(!state.order){
+    return `<div class="card card-pad">
+      <h1 class="page-title">အော်ဒါကုဒ် ရိုက်ထည့်ပါ</h1>
+      <p class="page-sub">အော်ဒါထည့်စက်မှ ရရှိသော ၄ လုံးကုဒ်ကို ထည့်ပါ</p>
+      <label class="field-label">အော်ဒါကုဒ်</label>
+      <input class="field-input mono-input" id="inp-code" maxlength="4" placeholder="0000" style="font-size:20px;letter-spacing:4px;text-align:center;" value="${escapeHTML(state.codeInput)}">
+      <div style="margin-top:14px;">
+        <button class="btn btn-primary" id="btn-search" ${state.saving?'disabled':''}>${ICONS.receipt} ${state.saving?'ရှာနေသည်...':'ဘောက်ချာ ထုတ်မည်'}</button>
+      </div>
+      ${state.searchError ? `<div class="error-box">${ICONS.alert}<span>${state.searchError}</span></div>` : ''}
+    </div>`;
+  }
+
+  const o = state.order;
+  const subtotal = o.subtotal;
+  const items = o.items.map(it=>`
+    <div class="totals-row">
+      <span>${escapeHTML(it.name)} × ${it.qty}</span>
+      <span class="totals-amt">${fmt(it.price*it.qty)}</span>
+    </div>`).join('');
+
+  const donationDecided = state.donation!==null;
+  const tipDecided = state.tip!==null;
+  const allDecided = donationDecided && tipDecided;
+  const grand = subtotal + (state.donation||0) + (state.tip||0);
+
+  let html = `<div class="receipt-paper">
+    <div class="receipt-head">
+      <div class="rname">ဘောက်ချာ</div>
+      <div class="rcode">အော်ဒါကုဒ် #${o.code}</div>
+    </div>
+    <div class="dashed"></div>
+    ${items}
+    <div class="dashed"></div>
+    <div class="totals-row grand"><span>စုစုပေါင်း (ပစ္စည်းစရိတ်)</span><span class="totals-amt">${fmt(subtotal)} ကျပ်</span></div>
+  </div>`;
+
+  /* donation section */
+  html += `<div class="receipt-paper" style="border-radius:0;padding-top:16px;">
+    <div class="section-title">${ICONS.gift} လိုအပ်နေသော ကလေးများအား အလှူငွေ</div>`;
+
+  // ---- Insert image of kids in need ----
+  html += `<div style="margin:12px 0; border-radius:12px; overflow:hidden; background:#f5f5f5;">
+    <img src="https://tzuchi-en-backend.storage.googleapis.com/content/images/2025/04/P-2-1.jpg" alt="လိုအပ်နေသော ကလေးများ" style="width:100%; height:auto; display:block;">
+    <!-- Replace the src above with your actual kids photo -->
+  </div>`;
+  // -----------------------------------
+
+  if(!donationDecided){
+    html += `<div class="section-note">ဤအပိုင်းသည် လိုအပ်မှသာ ဖြစ်ပါသည် အလှူငွေ ပါဝင်လိုပါက ပမာဏကို ရွေးပါ</div>
+      <div class="amount-grid">
+        <button class="amount-btn" data-donate="500">၅၀၀ ကျပ်</button>
+        <button class="amount-btn" data-donate="1000">၁,၀၀၀ ကျပ်</button>
+        <button class="amount-btn" data-donate="5000">၅,၀၀၀ ကျပ်</button>
+      </div>
+      <button class="btn btn-outline" id="btn-skip-donate" style="width:100%;">လှူဒါန်းမှု မလုပ်ပါ</button>`;
+  } else if(state.donation>0){
+    html += `<div class="decided-box">${ICONS.check}<span>${fmt(state.donation)} ကျပ် လှူဒါန်းပြီးပါပြီ</span></div>`;
+  } else {
+    html += `<div class="decided-box zero">${ICONS.x}<span>အလှူငွေ မထည့်ခဲ့ပါ</span></div>`;
+  }
+  html += `</div>`;
+
+  /* tip section - only after donation decided */
+  if(donationDecided){
+    html += `<div class="receipt-paper" style="border-radius:0;padding-top:16px;">
+      <div class="section-title">${ICONS.coin} စားပွဲထိုးများအတွက် အထူးဆု (Tip)</div>`;
+    if(!tipDecided){
+      html += `<div class="section-note">ဤအပိုင်းသည်လည်း လိုအပ်မှသာ ဖြစ်ပါသည် လိုချင်သော ပမာဏကို ရိုက်ထည့်ပါ</div>
+        <div class="tip-input-row">
+          <input class="field-input mono-input" id="inp-tip" type="number" min="0" placeholder="ပမာဏ ရိုက်ထည့်ပါ" value="${state.tipCustom}">
+          <button class="btn btn-gold" id="btn-give-tip" style="width:auto;padding:0 18px;">ပေးမည်</button>
+        </div>
+        <button class="btn btn-outline" id="btn-skip-tip" style="width:100%;">Tip မပေးလိုပါ</button>`;
+    } else if(state.tip>0){
+      html += `<div class="decided-box">${ICONS.check}<span>${fmt(state.tip)} ကျပ် Tip ပေးပြီးပါပြီ</span></div>`;
+    } else {
+      html += `<div class="decided-box zero">${ICONS.x}<span>Tip မပေးခဲ့ပါ</span></div>`;
+    }
+    html += `</div>`;
+  }
+
+  /* final total + QR */
+  if(allDecided){
+    html += `<div class="receipt-paper" style="border-radius:0 0 14px 14px;padding-top:16px;">
+      <div class="final-total">
+        <div class="frow"><span>ပစ္စည်းစရိတ်</span><span class="frow-amt">${fmt(subtotal)}</span></div>
+        ${state.donation>0?`<div class="frow"><span>ကလေးများအလှူငွေ</span><span class="frow-amt">${fmt(state.donation)}</span></div>`:''}
+        ${state.tip>0?`<div class="frow"><span>Tip</span><span class="frow-amt">${fmt(state.tip)}</span></div>`:''}
+        <div class="frow grand"><span>ကျသင့်ငွေ စုစုပေါင်း</span><span class="frow-amt">${fmt(grand)} ကျပ်</span></div>
+      </div>
+      <div class="qr-box">
+        <div class="qr-brand">KBZPay ဖြင့် ငွေပေးချေရန်</div>
+        <!-- Static QR code image (replace with your own KBZPay QR code) -->
+        <div class="qr-canvas" style="display:flex; justify-content:center; align-items:center;">
+          <img src="https://netless.gt.tc/kpayqrcode.png" alt="KBZPay QR Code" style="max-width:100%; height:auto; border-radius:6px;">
+          <p>U Kyaw Thuya Soe</p>
+          <!-- Replace the src above with your actual KBZPay merchant QR code image -->
+        </div>
+        <div class="qr-caption">KBZPay အက်ပ်ဖြင့် ကုဒ်ကို စကင်ဖတ်၍ ${fmt(grand)} ကျပ် ပေးချေပါ</div>
+      </div>
+      <div class="bottom-actions">
+        <button class="btn btn-outline" id="btn-new-check" style="width:100%;">${ICONS.receipt} အခြားအော်ဒါကုဒ် စစ်ဆေးမည်</button>
+      </div>
+    </div>`;
+  }
+
+  html += `<div class="receipt-torn"></div>`;
+  return html;
+}
+
+function modalHTML(){
+  const m = state.modal;
+  const label = m.kind==='donation' ? 'လှူဒါန်းမည့် ပမာဏ' : 'ပေးမည့် Tip ပမာဏ';
+  return `<div class="modal-backdrop" id="modal-backdrop">
+    <div class="modal-box">
+      <div class="modal-icon">${m.kind==='donation'?ICONS.gift:ICONS.coin}</div>
+      <p class="modal-title">သေချာပါသလား</p>
+      <p class="section-note" style="margin-bottom:6px;">${label}</p>
+      <div class="modal-amt">${fmt(m.amount)} ကျပ်</div>
+      <div class="modal-btns">
+        <button class="btn btn-outline" id="modal-cancel">${ICONS.x} ပယ်ဖျက်မည်</button>
+        <button class="btn btn-gold" id="modal-confirm">${ICONS.check} အတည်ပြုမည်</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+function escapeHTML(s){
+  return String(s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+function attachEvents(){
+  const byId = id => document.getElementById(id);
+  if(byId('btn-back')) byId('btn-back').onclick = goSelect;
+  if(byId('pick-order')) byId('pick-order').onclick = ()=>selectDevice('order');
+  if(byId('pick-receipt')) byId('pick-receipt').onclick = ()=>selectDevice('receipt');
+
+  if(byId('btn-add')) byId('btn-add').onclick = addItem;
+  if(byId('btn-gencode')) byId('btn-gencode').onclick = generateCode;
+  if(byId('btn-neworder')) byId('btn-neworder').onclick = newOrder;
+  document.querySelectorAll('[data-remove]').forEach(b=>{
+    b.onclick = ()=>removeItem(parseInt(b.getAttribute('data-remove')));
+  });
+
+  if(byId('inp-code')) byId('inp-code').oninput = e=>{ setCodeInput(e.target.value); };
+  if(byId('btn-search')) byId('btn-search').onclick = searchOrder;
+
+  document.querySelectorAll('[data-donate]').forEach(b=>{
+    b.onclick = ()=>askDonation(parseInt(b.getAttribute('data-donate')));
+  });
+  if(byId('btn-skip-donate')) byId('btn-skip-donate').onclick = skipDonation;
+
+  if(byId('inp-tip')) byId('inp-tip').oninput = e=>{ setTipCustom(e.target.value); };
+  if(byId('btn-give-tip')) byId('btn-give-tip').onclick = askTip;
+  if(byId('btn-skip-tip')) byId('btn-skip-tip').onclick = skipTip;
+
+  if(byId('btn-new-check')) byId('btn-new-check').onclick = resetReceiptFlow;
+
+  if(byId('modal-cancel')) byId('modal-cancel').onclick = closeModal;
+  if(byId('modal-confirm')) byId('modal-confirm').onclick = ()=>{
+    if(state.modal.kind==='donation') confirmDonation(); else confirmTip();
+  };
+}
+
+render();
+</script>
+</body>
+</html>

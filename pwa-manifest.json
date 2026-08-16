@@ -1,0 +1,23 @@
+{
+  "name": "စားသောက်ဆိုင် ဘောက်ချာ System",
+  "short_name": "ဘောက်ချာ",
+  "description": "စားသောက်ဆိုင်များအတွက် အော်ဒါနှင့် ဘောက်ချာ စီမံခန့်ခွဲမှုစနစ်",
+  "start_url": "/reciptrestaurant.html",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#000000",
+  "lang": "my",
+  "icons": [
+    {
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
